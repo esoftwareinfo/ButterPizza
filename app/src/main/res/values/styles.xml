@@ -1,0 +1,14 @@
+<resources>
+
+
+    <style name="AppBaseTheme_Adssss" parent="android:Theme.Light">
+
+    </style>
+
+
+    <style name="AppTheme_Adssss" parent="AppBaseTheme_Adssss">
+
+    </style>
+
+
+</resources>
