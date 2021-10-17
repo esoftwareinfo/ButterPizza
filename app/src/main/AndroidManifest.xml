@@ -15,8 +15,6 @@
         android:hardwareAccelerated="true"
         android:supportsRtl="true"
         android:largeHeap="true"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:replace="android:label,android:allowBackup"
 
         >
 
