@@ -20,5 +20,9 @@
     <color name="gnt_ad_green">#3A6728</color>
     <color name="gnt_gray">#808080</color>
     <color name="gnt_outline">#00E0E0E0</color>
+    <color name="titleText">#101010</color>
+    <color name="descriptionText">#202020</color>
+    <color name="positiveButton">#101010</color>
+    <color name="negativeButton">#101010</color>
 
 </resources>

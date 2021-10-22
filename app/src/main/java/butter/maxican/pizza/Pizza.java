@@ -31,18 +31,29 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.appopen.AppOpenAd;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdOptions;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
 import com.tappx.sdk.android.TappxAdError;
 import com.tappx.sdk.android.TappxBanner;
 import com.tappx.sdk.android.TappxBannerListener;
@@ -72,6 +83,11 @@ public class Pizza {
     Context Contextt;
     AdView mAdView, mAdView_exit;
     public InterstitialAd Splash_InterstialAd, InterstialAd, InterstialAd1;
+
+    public RewardedAd mRewardedAd;
+    RewardedInterstitialAd mrewardedInterstitialAd;
+
+    public RewardedInterstitialAd rewardedInterstitialAd;
     RelativeLayout relative;
 
     String Tx_ID;
@@ -89,7 +105,13 @@ public class Pizza {
     TappxInterstitial Splash_tappxInterstitial_preload, tappxInterstitial,
             tappxInterstitial_preload;
 
-    int Server_Yes_No = 1000;
+
+    //AppOpen
+    public AppOpenAd.AppOpenAdLoadCallback loadCallback;
+    private static boolean isShowingAd = false;
+    private AppOpenAd appOpenAd = null;
+
+    public static int Server_Yes_No = 1000;
 
     int Native_Load = 1000;
     TemplateView templateView_Pre_Load = null;
@@ -124,6 +146,12 @@ public class Pizza {
     ArrayList<HashMap<String, String>> contactList;
     public static int Exit_Menu_Decided = 0;
     Boolean doubleBackToExitPressedOnce = false;
+
+
+    public interface OnRewardgetListner {
+        public void OnReward(boolean b);   //method, which can have parameters
+    }
+
 
     @SuppressWarnings("static-access")
     public Pizza(Context context, String Package, String name,
@@ -1099,6 +1127,7 @@ public class Pizza {
 
     }
 
+
     public void Pre_Interstial_Load(final Context mContext) {
 
         if (Butter.getinter(mContext) == 0) {
@@ -1190,6 +1219,7 @@ public class Pizza {
         }
 
     }
+
 
     public void Pre_Interstial_Show(final Context mContext) {
 
@@ -1366,9 +1396,7 @@ public class Pizza {
             Ad_Layout.setVisibility(View.GONE);
 
         }
-
     }
-
 
     public void Native_Main_Linear(Context nContext, final RelativeLayout Ad_Layout,
                                    int Native_Type, int Bottom_Ad_Margin, int Top_Ad_Margin, int Animation) {
@@ -1571,7 +1599,344 @@ public class Pizza {
 
     }
 
-    public void Reward(Context aContext, String Ad_ID) {
+    public void Pre_App_Open_Show(Activity currentActivity) {
+        // Only show ad if there is not already an app open ad currently showing
+        // and an ad is available.
+        if (!isShowingAd && appOpenAd != null) {
+
+
+            FullScreenContentCallback fullScreenContentCallback =
+                    new FullScreenContentCallback() {
+                        @Override
+                        public void onAdDismissedFullScreenContent() {
+                            // Set the reference to null so isAdAvailable() returns false.
+                            appOpenAd = null;
+                            isShowingAd = false;
+                            Pre_App_Open_Load(currentActivity);
+                        }
+
+                        @Override
+                        public void onAdFailedToShowFullScreenContent(AdError adError) {
+
+                            if (tappxInterstitial_preload != null)
+                                tappxInterstitial_preload.show();
+
+                        }
+
+                        @Override
+                        public void onAdShowedFullScreenContent() {
+                            isShowingAd = true;
+                        }
+                    };
+
+            appOpenAd.show(currentActivity, fullScreenContentCallback);
+
+        } else {
+
+            Pre_App_Open_Load(currentActivity);
+
+            if (tappxInterstitial_preload != null)
+                tappxInterstitial_preload.show();
+
+        }
+    }
+
+
+    public void Pre_App_Open_Load(Context mContext) {
+
+        if (appOpenAd != null) {
+            return;
+        }
+
+        loadCallback =
+                new AppOpenAd.AppOpenAdLoadCallback() {
+                    /**
+                     * Called when an app open ad has loaded.
+                     *
+                     * @param ad the loaded app open ad.
+                     */
+                    @Override
+                    public void onAppOpenAdLoaded(AppOpenAd ad) {
+                        appOpenAd = ad;
+                    }
+
+                    /**
+                     * Called when an app open ad has failed to load.
+                     *
+                     * @param loadAdError the error.
+                     */
+                    @Override
+                    public void onAppOpenAdFailedToLoad(LoadAdError loadAdError) {
+                        // Handle the error.
+
+                        tappxInterstitial_preload = new TappxInterstitial(mContext,
+                                Butter.gettx(Contextt));
+                        tappxInterstitial_preload.loadAd();
+                        tappxInterstitial_preload
+                                .setListener(new TappxInterstitialListener() {
+                                    @Override
+                                    public void onInterstitialLoaded(
+                                            TappxInterstitial tappxInterstitial) {
+
+
+                                    }
+
+                                    @Override
+                                    public void onInterstitialLoadFailed(
+                                            TappxInterstitial tappxInterstitial,
+                                            TappxAdError tappxAdError) {
+
+                                    }
+
+                                    @Override
+                                    public void onInterstitialClicked(
+                                            TappxInterstitial arg0) {
+                                        // TODO Auto-generated method stub
+
+                                    }
+
+                                    @Override
+                                    public void onInterstitialDismissed(
+                                            TappxInterstitial arg0) {
+                                        // TODO Auto-generated method stub
+
+                                    }
+
+                                    @Override
+                                    public void onInterstitialShown(
+                                            TappxInterstitial arg0) {
+                                        // TODO Auto-generated method stub
+
+                                    }
+
+                                });
+
+
+                    }
+
+                };
+        AdRequest request = new AdRequest.Builder().build();
+        AppOpenAd.load(
+                mContext, Butter.getapp_open(mContext), request,
+                AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
+
+
+    }
+
+    public void Reward_Inter_Show(Activity mContext, String title, String description, int Popupmenu_Type) {
+
+        CustomProgressDialogue progressDialog = new CustomProgressDialogue(mContext, Popupmenu_Type, title, description);
+
+        progressDialog.show();
+
+        RewardedInterstitialAd.load(mContext, Butter.getinter_reward(mContext),
+                new AdRequest.Builder().build(), new RewardedInterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(RewardedInterstitialAd ad) {
+
+
+                        rewardedInterstitialAd = ad;
+
+                        rewardedInterstitialAd.show(mContext, new OnUserEarnedRewardListener() {
+                            @Override
+                            public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+
+                            }
+                        });
+
+
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+
+                                progressDialog.dismiss();
+
+
+                            }
+
+                        }, 1000);
+
+
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(LoadAdError loadAdError) {
+                        rewardedInterstitialAd = null;
+                        progressDialog.dismiss();
+                    }
+                });
+
+    }
+
+
+    public void Reward_Inter_Show_with_Dialog(Activity mContext, OnRewardgetListner onRewardgetListner, String title, String description, int Popupmenu_Type) {
+
+
+        CustomProgressDialogue progressDialog = new CustomProgressDialogue(mContext, Popupmenu_Type, title, description);
+
+
+        new FancyGifDialog.Builder(mContext)
+                .setTitle(title) // You can also send title like R.string.from_resources
+                .setMessage(description) // or pass like R.string.description_from_resources
+                .setTitleTextColor(R.color.titleText)
+                .setDescriptionTextColor(R.color.descriptionText)
+                .setNegativeBtnText("Close") // or pass it like android.R.string.cancel
+                .setPositiveBtnBackground(R.color.positiveButton)
+                .setPositiveBtnText("Watch Now (Ad)") // or pass it like android.R.string.ok
+                .setNegativeBtnBackground(R.color.positiveButton)
+                .setGifResource(R.drawable.ad1)   //Pass your Gif here
+                .isCancellable(true)
+                .OnPositiveClicked(new FancyGifDialogListener() {
+                    @Override
+                    public void OnClick() {
+
+
+                        progressDialog.show();
+
+                        AdRequest adRequest = new AdRequest.Builder().build();
+                        RewardedInterstitialAd.load(mContext, Butter.getinter_reward(mContext),
+                                adRequest, new RewardedInterstitialAdLoadCallback() {
+                                    @Override
+                                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                                        // Handle the error.
+                                        mrewardedInterstitialAd = null;
+
+
+                                        Log.e("TAG", "onAdFailedToLoad: " + loadAdError.getMessage());
+                                        onRewardgetListner.OnReward(false);
+                                        progressDialog.dismiss();
+                                    }
+
+                                    @Override
+                                    public void onAdLoaded(@NonNull RewardedInterstitialAd rewardedInterstitialAd) {
+                                        super.onAdLoaded(rewardedInterstitialAd);
+
+                                        mrewardedInterstitialAd = rewardedInterstitialAd;
+
+                                        mrewardedInterstitialAd.show(mContext, new OnUserEarnedRewardListener() {
+                                            @Override
+                                            public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                                                onRewardgetListner.OnReward(true);
+                                            }
+                                        });
+
+
+                                        final Handler handler = new Handler();
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+
+
+                                                progressDialog.dismiss();
+
+
+                                            }
+
+                                        }, 1000);
+                                    }
+
+
+                                });
+
+                    }
+                })
+                .OnNegativeClicked(new FancyGifDialogListener() {
+                    @Override
+                    public void OnClick() {
+
+
+                    }
+                })
+                .build();
+
+
+    }
+
+
+    public void Reward(Activity mContext, OnRewardgetListner onRewardgetListner, String title, String description, int Popupmenu_Type) {
+
+
+        CustomProgressDialogue progressDialog = new CustomProgressDialogue(mContext, Popupmenu_Type, title, description);
+
+
+        new FancyGifDialog.Builder(mContext)
+                .setTitle(title) // You can also send title like R.string.from_resources
+                .setMessage(description) // or pass like R.string.description_from_resources
+                .setTitleTextColor(R.color.titleText)
+                .setDescriptionTextColor(R.color.descriptionText)
+                .setNegativeBtnText("Close") // or pass it like android.R.string.cancel
+                .setPositiveBtnBackground(R.color.positiveButton)
+                .setPositiveBtnText("Watch Now (Ad)") // or pass it like android.R.string.ok
+                .setNegativeBtnBackground(R.color.positiveButton)
+                .setGifResource(R.drawable.ad1)   //Pass your Gif here
+                .isCancellable(true)
+                .OnPositiveClicked(new FancyGifDialogListener() {
+                    @Override
+                    public void OnClick() {
+
+
+                        progressDialog.show();
+
+                        AdRequest adRequest = new AdRequest.Builder().build();
+                        RewardedAd.load(mContext, Butter.getreward(mContext),
+                                adRequest, new RewardedAdLoadCallback() {
+                                    @Override
+                                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                                        // Handle the error.
+                                        mRewardedAd = null;
+
+
+                                        Log.e("TAG", "onAdFailedToLoad: " + loadAdError.getMessage());
+                                        onRewardgetListner.OnReward(false);
+                                        progressDialog.dismiss();
+                                    }
+
+                                    @Override
+                                    public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
+                                        mRewardedAd = rewardedAd;
+
+
+                                        mRewardedAd.show(mContext, new OnUserEarnedRewardListener() {
+                                            @Override
+                                            public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+
+                                                onRewardgetListner.OnReward(true);
+
+
+                                            }
+                                        });
+
+                                        final Handler handler = new Handler();
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+
+
+                                                progressDialog.dismiss();
+
+
+                                            }
+
+                                        }, 1000);
+
+
+                                    }
+
+                                });
+
+                    }
+                })
+                .OnNegativeClicked(new FancyGifDialogListener() {
+                    @Override
+                    public void OnClick() {
+
+
+                    }
+                })
+                .build();
+
 
     }
 
@@ -2499,7 +2864,28 @@ public class Pizza {
 
                 Server_Yes_No = 1;
 
-                Pre_Interstial_Load(Contextt);
+                if ((Butter.getextra1(Contextt)).equals("1")) {
+
+                    Pre_Interstial_Load(Contextt);
+
+                } else if ((Butter.getextra1(Contextt)).equals("2")) {
+
+                    Pre_App_Open_Load(Contextt);
+
+                } else if ((Butter.getextra1(Contextt)).equals("3")) {
+
+                    Pre_Interstial_Load(Contextt);
+
+                    Pre_App_Open_Load(Contextt);
+
+                } else {
+
+                    Pre_Interstial_Load(Contextt);
+
+                    Pre_App_Open_Load(Contextt);
+
+                }
+
 
             }
 
@@ -2531,7 +2917,27 @@ public class Pizza {
 
                 Server_Yes_No = 0;
 
-                Pre_Interstial_Load(Contextt);
+                if ((Butter.getextra1(Contextt)).equals("1")) {
+
+                    Pre_Interstial_Load(Contextt);
+
+                } else if ((Butter.getextra1(Contextt)).equals("2")) {
+
+                    Pre_App_Open_Load(Contextt);
+
+                } else if ((Butter.getextra1(Contextt)).equals("3")) {
+
+                    Pre_Interstial_Load(Contextt);
+
+                    Pre_App_Open_Load(Contextt);
+
+                } else {
+
+                    Pre_Interstial_Load(Contextt);
+
+                    Pre_App_Open_Load(Contextt);
+
+                }
 
             }
 
