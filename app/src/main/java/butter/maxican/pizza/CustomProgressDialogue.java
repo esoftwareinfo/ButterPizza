@@ -10,20 +10,19 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 public class CustomProgressDialogue extends Dialog {
-    public CustomProgressDialogue(Context context, int layoutnumber,String title,String description) {
-        super(context,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+    public CustomProgressDialogue(Context context, int layoutnumber, String title, String description) {
+        super(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 
-        if (layoutnumber==2){
+        if (layoutnumber == 2) {
 
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }else {
+        } else {
             requestWindowFeature(Window.FEATURE_NO_TITLE);
             WindowManager.LayoutParams wlmp = getWindow().getAttributes();
 
             wlmp.gravity = Gravity.CENTER_HORIZONTAL;
             getWindow().setAttributes(wlmp);
         }
-
 
 
         setTitle(null);
@@ -44,12 +43,9 @@ public class CustomProgressDialogue extends Dialog {
             setContentView(view);
 
 
-            ((TextView)view.findViewById(R.id.title)).setText(""+title);
-            ((TextView)view.findViewById(R.id.message)).setText(""+description);
+            ((TextView) view.findViewById(R.id.title)).setText("" + title);
+            ((TextView) view.findViewById(R.id.message)).setText("" + description);
         }
-
-
-
 
 
     }

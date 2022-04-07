@@ -2,11 +2,11 @@
 
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/white"
-    android:layout_height="match_parent">
+    android:padding="10dp">
 
 
     <androidx.cardview.widget.CardView
@@ -18,14 +18,14 @@
         app:cardElevation="16dp"
         app:cardUseCompatPadding="true">
 
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/gifImageView"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ad1" />
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/gifImageView"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ad1" />
 
     </androidx.cardview.widget.CardView>
 
@@ -53,31 +53,30 @@
         android:gravity="center"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
+        android:text="Description"
         android:textAlignment="center"
-        android:textSize="18sp"
-        android:text="Description" />
+        android:textSize="18sp" />
 
 
     <ProgressBar
         android:id="@+id/progressbar"
-        android:layout_marginTop="20dp"
-       android:layout_above="@+id/loadingtext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/loadingtext"
         android:layout_centerHorizontal="true"
-        android:indeterminateTint="#101010"
-        />
+        android:layout_marginTop="20dp"
+        android:indeterminateTint="#101010" />
 
     <TextView
         android:id="@+id/loadingtext"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:text="Loading Ads..."
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="10dp"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:layout_marginBottom="50dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="50dp"
+        android:gravity="center"
+        android:text="Loading Ads..."
+        android:textSize="20sp"
+        android:textStyle="bold" />
 </RelativeLayout>

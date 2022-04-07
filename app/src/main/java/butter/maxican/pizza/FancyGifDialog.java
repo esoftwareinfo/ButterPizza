@@ -120,13 +120,13 @@ public class FancyGifDialog {
             return this;
         }
 
-        //set Positive listener
+        
         public Builder OnPositiveClicked(FancyGifDialogListener pListener) {
             this.pListener = pListener;
             return this;
         }
 
-        //set Negative listener
+        
         public Builder OnNegativeClicked(FancyGifDialogListener nListener) {
             this.nListener = nListener;
             return this;
@@ -161,7 +161,7 @@ public class FancyGifDialog {
             dialog.setContentView(R.layout.fancygifdialog);
 
 
-            //getting resources
+            
             title1 = dialog.findViewById(R.id.title);
             message1 = dialog.findViewById(R.id.message);
             nBtn = dialog.findViewById(R.id.negativeBtn);

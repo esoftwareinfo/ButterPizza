@@ -21,7 +21,7 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.appopen.AppOpenAd;
 
 
-public class AppOpenManager implements Application.ActivityLifecycleCallbacks, LifecycleObserver {
+public class AppOpenManager_Exclude implements Application.ActivityLifecycleCallbacks, LifecycleObserver {
     private static final String LOG_TAG = "AppOpenManager";
     private AppOpenAd appOpenAd = null;
     private Activity currentActivity;
@@ -31,10 +31,17 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
 
     private final Application myApplication;
 
+    String AC1 = "", AC2 = "", AC3 = "", AC4 = "", AC5 = "";
 
-    public AppOpenManager(Application myApplication) {
+    
+    public AppOpenManager_Exclude(Application myApplication, String Ac1, String Ac2, String Ac3, String Ac4, String Ac5) {
         this.myApplication = myApplication;
 
+        this.AC1 = Ac1;
+        this.AC2 = Ac2;
+        this.AC3 = Ac3;
+        this.AC4 = Ac4;
+        this.AC5 = Ac5;
 
         this.myApplication.registerActivityLifecycleCallbacks(this);
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
@@ -42,10 +49,10 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
 
     }
 
-
+    
     public void showAdIfAvailable() {
-
-
+        
+        
         if (!isShowingAd && isAdAvailable()) {
             Log.d(LOG_TAG, "Will show ad.");
 
@@ -53,8 +60,8 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
                     new FullScreenContentCallback() {
                         @Override
                         public void onAdDismissedFullScreenContent() {
-
-                            AppOpenManager.this.appOpenAd = null;
+                            
+                            AppOpenManager_Exclude.this.appOpenAd = null;
                             isShowingAd = false;
                             fetchAd();
                         }
@@ -78,6 +85,7 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
     }
 
 
+    
     public void fetchAd() {
 
         final Handler handler = new Handler();
@@ -87,28 +95,28 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
 
                 if (Pizza.Server_Yes_No == 1 || Pizza.Server_Yes_No == 0) {
 
-                    if (Pizza.Exit_Menu_Decided == 100) {
+                    if (Pizza.Exit_Menu_Decided==100){
 
                         return;
                     }
 
-
+                    
                     if (isAdAvailable()) {
                         return;
                     }
 
                     loadCallback =
                             new AppOpenAd.AppOpenAdLoadCallback() {
-
+                                
                                 @Override
                                 public void onAppOpenAdLoaded(AppOpenAd ad) {
-                                    AppOpenManager.this.appOpenAd = ad;
+                                    AppOpenManager_Exclude.this.appOpenAd = ad;
                                 }
 
-
+                                
                                 @Override
                                 public void onAppOpenAdFailedToLoad(LoadAdError loadAdError) {
-
+                                    
                                 }
 
                             };
@@ -131,21 +139,32 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
     }
 
 
+    
     private AdRequest getAdRequest() {
         return new AdRequest.Builder().build();
     }
 
-
+    
     public boolean isAdAvailable() {
         return appOpenAd != null;
     }
 
-
+    
     @OnLifecycleEvent(ON_START)
     public void onStart() {
 
+        if ((currentActivity.getLocalClassName()).equals(AC1) ||
+                (currentActivity.getLocalClassName()).equals(AC2) ||
+                (currentActivity.getLocalClassName()).equals(AC3) ||
+                (currentActivity.getLocalClassName()).equals(AC4) ||
+                (currentActivity.getLocalClassName()).equals(AC5)) {
 
-        showAdIfAvailable();
+
+        } else {
+            showAdIfAvailable();
+        }
+
+
 
     }
 

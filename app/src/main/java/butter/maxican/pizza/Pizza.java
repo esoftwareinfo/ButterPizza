@@ -1,5 +1,6 @@
 package butter.maxican.pizza;
 
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -32,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.vectordrawable.graphics.drawable.ArgbEvaluator;
 
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
@@ -95,8 +97,6 @@ public class Pizza {
     String Banner, Banner1, Banner2;
 
 
-    //String Native_ID;
-
     String Native_ID, Native_ID1, Native_ID2;
 
     String APP_ID, APP_OPEN, REWARD, INTER_REWARD, EXTRA1, EXTRA2;
@@ -106,7 +106,6 @@ public class Pizza {
             tappxInterstitial_preload;
 
 
-    //AppOpen
     public AppOpenAd.AppOpenAdLoadCallback loadCallback;
     private static boolean isShowingAd = false;
     private AppOpenAd appOpenAd = null;
@@ -149,7 +148,7 @@ public class Pizza {
 
 
     public interface OnRewardgetListner {
-        public void OnReward(boolean b);   //method, which can have parameters
+        public void OnReward(boolean b);
     }
 
 
@@ -166,8 +165,6 @@ public class Pizza {
         Name = name;
 
         Server = server;
-
-        //MobileAds.initialize(Contextt, All.App_ID);
 
 
         MobileAds.initialize(Contextt, new OnInitializationCompleteListener() {
@@ -212,9 +209,6 @@ public class Pizza {
 
     }
 
-    // mediation.Pre_Banner_Load(4);
-
-    // mediation.Pre_Banner_Show((RelativeLayout), 4);
 
     public void Pre_Banner_Load(final int Which_Banner_Load) {
 
@@ -263,7 +257,7 @@ public class Pizza {
 
             @Override
             public void onAdLoaded() {
-                // TODO Auto-generated method stub
+
                 super.onAdLoaded();
 
                 Butter.setsplashcount(Contextt, 0);
@@ -274,7 +268,7 @@ public class Pizza {
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
-                // TODO Auto-generated method stub
+
                 super.onAdFailedToLoad(errorCode);
 
                 Banner_Load_Not = 0;
@@ -294,27 +288,27 @@ public class Pizza {
         if (Which_Banner_Load == 4) {
 
             Pre_Tappxbanner
-                    .setAdSize(com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250);
+                    .setAdSize(TappxBanner.AdSize.BANNER_300x250);
 
         } else if (Which_Banner_Load == 3) {
 
             Pre_Tappxbanner
-                    .setAdSize(com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250);
+                    .setAdSize(TappxBanner.AdSize.BANNER_300x250);
 
         } else if (Which_Banner_Load == 2) {
 
             Pre_Tappxbanner
-                    .setAdSize(com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250);
+                    .setAdSize(TappxBanner.AdSize.BANNER_300x250);
 
         } else if (Which_Banner_Load == 1) {
 
             Pre_Tappxbanner
-                    .setAdSize(com.tappx.sdk.android.TappxBanner.AdSize.SMART_BANNER);
+                    .setAdSize(TappxBanner.AdSize.SMART_BANNER);
 
         } else {
 
             Pre_Tappxbanner
-                    .setAdSize(com.tappx.sdk.android.TappxBanner.AdSize.SMART_BANNER);
+                    .setAdSize(TappxBanner.AdSize.SMART_BANNER);
 
         }
 
@@ -365,12 +359,12 @@ public class Pizza {
 
                 RelativeLayout.LayoutParams relativeParams = (RelativeLayout.LayoutParams) Ad_Layout
                         .getLayoutParams();
-                relativeParams.setMargins(0, 10, 0, 0); // left, top, right,
-                // bottom
+                relativeParams.setMargins(0, 10, 0, 0);
+
                 Ad_Layout.setLayoutParams(relativeParams);
 
             } catch (Exception e) {
-                // TODO: handle exception
+
             }
 
         }
@@ -384,7 +378,7 @@ public class Pizza {
     }
 
     private void Pre_Banner_Show_Tappx(RelativeLayout Ad_Layout) {
-        // TODO Auto-generated method stub
+
 
         try {
 
@@ -392,12 +386,12 @@ public class Pizza {
 
             RelativeLayout.LayoutParams relativeParams = (RelativeLayout.LayoutParams) Ad_Layout
                     .getLayoutParams();
-            relativeParams.setMargins(0, 10, 0, 0); // left, top, right,
-            // bottom
+            relativeParams.setMargins(0, 10, 0, 0);
+
             Ad_Layout.setLayoutParams(relativeParams);
 
         } catch (Exception e) {
-            // TODO: handle exception
+
         }
 
     }
@@ -407,6 +401,7 @@ public class Pizza {
                             final Context ads_context, final int Splash_Time) {
 
         if (isNetworkConnected(Contextt) == true) {
+
 
             int width = 480, Height = 800;
 
@@ -426,7 +421,7 @@ public class Pizza {
             builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialogInterface) {
-                    // nothing;
+
                 }
             });
 
@@ -437,9 +432,30 @@ public class Pizza {
             width = displayMetrics.widthPixels;
             Height = displayMetrics.heightPixels;
 
+            float[] hsv = new float[3];
+            int color = Text_Color;
+            Color.colorToHSV(color, hsv);
+            hsv[2] *= 0.175f;
+            color = Color.HSVToColor(hsv);
+
 
             final RelativeLayout RL = new RelativeLayout(ads_context);
-            RL.setBackgroundColor(Color.BLACK);
+
+
+            int colorFrom = ads_context.getResources().getColor(R.color.black);
+            int colorTo = color;
+            @SuppressLint("RestrictedApi") ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+            colorAnimation.setDuration(2000);
+            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                @Override
+                public void onAnimationUpdate(ValueAnimator animator) {
+                    RL.setBackgroundColor((int) animator.getAnimatedValue());
+                }
+
+            });
+            colorAnimation.start();
+
             RL.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
             builder.addContentView(RL, new RelativeLayout.LayoutParams(
                     WindowManager.LayoutParams.MATCH_PARENT,
@@ -494,7 +510,9 @@ public class Pizza {
                 @Override
                 public void run() {
 
+
                     if (Server_Yes_No == 1 || Server_Yes_No == 0) {
+
 
                         Splash_Interstial(builder, ads_context);
 
@@ -507,14 +525,13 @@ public class Pizza {
                 }
 
             }, 1000);
-
-
         }
+
 
     }
 
     private void Splash_Popup_Dissmiss(final Dialog builder) {
-        // TODO Auto-generated method stub
+
 
         new Handler().postDelayed(new Runnable() {
 
@@ -530,6 +547,14 @@ public class Pizza {
     }
 
     public void Splash_Interstial(final Dialog builder, final Context mContext) {
+
+
+        if (Exit_Menu_Decided == 100) {
+
+            Splash_Popup_Dissmiss(builder);
+            return;
+        }
+
 
         if (Butter.getinter(mContext) == 0) {
 
@@ -613,19 +638,19 @@ public class Pizza {
 
                     @Override
                     public void onInterstitialClicked(TappxInterstitial arg0) {
-                        // TODO Auto-generated method stub
+
 
                     }
 
                     @Override
                     public void onInterstitialDismissed(TappxInterstitial arg0) {
-                        // TODO Auto-generated method stub
+
 
                     }
 
                     @Override
                     public void onInterstitialShown(TappxInterstitial arg0) {
-                        // TODO Auto-generated method stub
+
 
                     }
 
@@ -635,12 +660,18 @@ public class Pizza {
 
     public void Banner(final RelativeLayout Ad_Layout, final int Banner_Type) {
 
+
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
 
                 if (Server_Yes_No == 1 || Server_Yes_No == 0) {
+
+                    if (Exit_Menu_Decided == 100) {
+
+                        return;
+                    }
 
                     AdSize Banner_Type_Size = null;
 
@@ -689,15 +720,15 @@ public class Pizza {
 
                     RelativeLayout.LayoutParams relativeParams = (RelativeLayout.LayoutParams) Ad_Layout
                             .getLayoutParams();
-                    relativeParams.setMargins(0, 10, 0, 0); // left, top, right,
-                    // bottom
+                    relativeParams.setMargins(0, 10, 0, 0);
+
                     Ad_Layout.setLayoutParams(relativeParams);
 
                     mAdView.setAdListener(new AdListener() {
 
                         @Override
                         public void onAdLoaded() {
-                            // TODO Auto-generated method stub
+
 
                             Ad_Layout.setVisibility(View.VISIBLE);
                             Butter.setsplashcount(Contextt, 0);
@@ -708,32 +739,32 @@ public class Pizza {
 
                         @Override
                         public void onAdFailedToLoad(int errorCode) {
-                            // TODO Auto-generated method stub
+
                             super.onAdFailedToLoad(errorCode);
 
                             mAdView.destroy();
 
-                            com.tappx.sdk.android.TappxBanner.AdSize Banner_Type_Size_Tappx = null;
+                            TappxBanner.AdSize Banner_Type_Size_Tappx = null;
 
                             if (Banner_Type == 1) {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.SMART_BANNER;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.SMART_BANNER;
 
                             } else if (Banner_Type == 2) {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.BANNER_300x250;
 
                             } else if (Banner_Type == 3) {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.BANNER_300x250;
 
                             } else if (Banner_Type == 4) {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.BANNER_300x250;
 
                             } else {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.SMART_BANNER;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.SMART_BANNER;
 
                             }
 
@@ -799,12 +830,18 @@ public class Pizza {
 
     public void Banner_Main_Linear(final RelativeLayout Ad_Layout, final int Banner_Type) {
 
+
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
 
                 if (Server_Yes_No == 1 || Server_Yes_No == 0) {
+
+                    if (Exit_Menu_Decided == 100) {
+
+                        return;
+                    }
 
                     AdSize Banner_Type_Size = null;
 
@@ -861,7 +898,7 @@ public class Pizza {
 
                         @Override
                         public void onAdLoaded() {
-                            // TODO Auto-generated method stub
+
 
                             Ad_Layout.setVisibility(View.VISIBLE);
                             Butter.setsplashcount(Contextt, 0);
@@ -872,32 +909,32 @@ public class Pizza {
 
                         @Override
                         public void onAdFailedToLoad(int errorCode) {
-                            // TODO Auto-generated method stub
+
                             super.onAdFailedToLoad(errorCode);
 
                             mAdView.destroy();
 
-                            com.tappx.sdk.android.TappxBanner.AdSize Banner_Type_Size_Tappx = null;
+                            TappxBanner.AdSize Banner_Type_Size_Tappx = null;
 
                             if (Banner_Type == 1) {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.SMART_BANNER;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.SMART_BANNER;
 
                             } else if (Banner_Type == 2) {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.BANNER_300x250;
 
                             } else if (Banner_Type == 3) {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.BANNER_300x250;
 
                             } else if (Banner_Type == 4) {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.BANNER_300x250;
 
                             } else {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.SMART_BANNER;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.SMART_BANNER;
 
                             }
 
@@ -964,6 +1001,12 @@ public class Pizza {
     public void Splash_Screen(final Context mContext, boolean bool,
                               final int When_App_Open_How_Much_Time_After) {
 
+
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
+
         if (Butter.getsplashcount(mContext) >= 10) {
 
             Load_Splash_Goog(mContext, When_App_Open_How_Much_Time_After);
@@ -994,7 +1037,12 @@ public class Pizza {
     }
 
     private void Load_Splash_Goog(final Context mContext, int splash_Screen_Time) {
-        // TODO Auto-generated method stub
+
+
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
 
         Ad_Popup(mContext, "Splash Ad . . .");
 
@@ -1053,7 +1101,12 @@ public class Pizza {
 
     public void Interstial(final Context mContext,
                            final int How_Much_Time_After_Interstial_Milisecond) {
-        // TODO Auto-generated method stub
+
+
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
 
         if (isNetworkConnected(Contextt) == true) {
 
@@ -1061,6 +1114,7 @@ public class Pizza {
 
                 @Override
                 public void run() {
+
 
                     Pre_Interstial_Show(mContext);
 
@@ -1073,6 +1127,11 @@ public class Pizza {
     }
 
     public void Interstial(final Context mContext) {
+
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
 
         if (Butter.getinter(mContext) == 0) {
 
@@ -1129,6 +1188,11 @@ public class Pizza {
 
 
     public void Pre_Interstial_Load(final Context mContext) {
+
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
 
         if (Butter.getinter(mContext) == 0) {
 
@@ -1191,21 +1255,21 @@ public class Pizza {
                                 @Override
                                 public void onInterstitialClicked(
                                         TappxInterstitial arg0) {
-                                    // TODO Auto-generated method stub
+
 
                                 }
 
                                 @Override
                                 public void onInterstitialDismissed(
                                         TappxInterstitial arg0) {
-                                    // TODO Auto-generated method stub
+
 
                                 }
 
                                 @Override
                                 public void onInterstitialShown(
                                         TappxInterstitial arg0) {
-                                    // TODO Auto-generated method stub
+
 
                                 }
 
@@ -1222,6 +1286,11 @@ public class Pizza {
 
 
     public void Pre_Interstial_Show(final Context mContext) {
+
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
 
         if (isNetworkConnected(Contextt) == true) {
 
@@ -1251,6 +1320,11 @@ public class Pizza {
 
     public void Pre_Interstial_Show_End(final Context mContext) {
 
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
+
         if (isNetworkConnected(Contextt) == true) {
 
             if (Inter_Failed == 1) {
@@ -1279,6 +1353,12 @@ public class Pizza {
     public void Interstial_Counted(Context mContext,
                                    int How_Much_Click_After_Interstial) {
 
+
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
+
         if (isNetworkConnected(Contextt) == true) {
 
             if (How_Much_Click_After_Interstial == Butter.getcount(mContext)) {
@@ -1300,6 +1380,7 @@ public class Pizza {
     public void Native(Context nContext, final RelativeLayout Ad_Layout,
                        int Native_Type, int Bottom_Ad_Margin, int Top_Ad_Margin, int Animation) {
 
+
         if (isNetworkConnected(Contextt) == true) {
 
             final Handler handler = new Handler();
@@ -1308,6 +1389,12 @@ public class Pizza {
                 public void run() {
 
                     if (Server_Yes_No == 1 || Server_Yes_No == 0) {
+
+
+                        if (Exit_Menu_Decided == 100) {
+
+                            return;
+                        }
 
                         if (Butter.getnative(nContext) == 0) {
 
@@ -1344,7 +1431,7 @@ public class Pizza {
                                         Ad_Layout.addView(templateView);
                                         RelativeLayout.LayoutParams relativeParams = (RelativeLayout.LayoutParams) Ad_Layout
                                                 .getLayoutParams();
-                                        relativeParams.setMargins(0, Bottom_Ad_Margin, 0, Top_Ad_Margin); // left, top, right,
+                                        relativeParams.setMargins(0, Bottom_Ad_Margin, 0, Top_Ad_Margin);
 
                                         Ad_Layout.setLayoutParams(relativeParams);
 
@@ -1401,6 +1488,7 @@ public class Pizza {
     public void Native_Main_Linear(Context nContext, final RelativeLayout Ad_Layout,
                                    int Native_Type, int Bottom_Ad_Margin, int Top_Ad_Margin, int Animation) {
 
+
         if (isNetworkConnected(Contextt) == true) {
 
             final Handler handler = new Handler();
@@ -1410,8 +1498,11 @@ public class Pizza {
 
                     if (Server_Yes_No == 1 || Server_Yes_No == 0) {
 
-                        //Native_Type = 1 - Means Small Native Ads
-                        //Native_Type = 2 - Means Medium Native Ads
+
+                        if (Exit_Menu_Decided == 100) {
+
+                            return;
+                        }
 
                         if (Butter.getnative(nContext) == 0) {
 
@@ -1505,6 +1596,12 @@ public class Pizza {
 
     public void Start(Context aContext, String Ad_ID) {
 
+
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
+
         if (isNetworkConnected(Contextt) == true) {
 
             int width = 480, Height = 800;
@@ -1525,7 +1622,7 @@ public class Pizza {
             builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialogInterface) {
-                    // nothing;
+
                 }
             });
 
@@ -1536,7 +1633,7 @@ public class Pizza {
             width = displayMetrics.widthPixels;
             Height = displayMetrics.heightPixels;
 
-            // Background
+
             final RelativeLayout RL = new RelativeLayout(aContext);
             RL.setBackgroundColor(Color.WHITE);
             RL.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
@@ -1559,7 +1656,7 @@ public class Pizza {
 
                             TemplateView templateView = new TemplateView(aContext, 0);
 
-                            //TemplateView templateView = findViewById(R.id.my_template);
+
                             templateView.setStyles(styles);
                             templateView.setNativeAd(nativeAd);
 
@@ -1567,7 +1664,7 @@ public class Pizza {
                             RL.addView(templateView);
 
                             templateView.setVisibility(View.VISIBLE);
-                            //Toast.makeText(nContext, "Native Ad is loaded, now you can show the native ad", Toast.LENGTH_LONG).show();
+
 
                         }
 
@@ -1575,7 +1672,7 @@ public class Pizza {
                     .withAdListener(new AdListener() {
                         @Override
                         public void onAdFailedToLoad(LoadAdError adError) {
-                            // Handle the failure by logging, altering the UI, and so on.
+
 
                             RL.removeAllViews();
                             Banner(RL, 4);
@@ -1583,8 +1680,8 @@ public class Pizza {
                         }
                     })
                     .withNativeAdOptions(new NativeAdOptions.Builder()
-                            // Methods in the NativeAdOptions.Builder class can be
-                            // used here to specify individual options settings.
+
+
                             .build())
                     .build();
 
@@ -1600,8 +1697,13 @@ public class Pizza {
     }
 
     public void Pre_App_Open_Show(Activity currentActivity) {
-        // Only show ad if there is not already an app open ad currently showing
-        // and an ad is available.
+
+
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
+
         if (!isShowingAd && appOpenAd != null) {
 
 
@@ -1609,7 +1711,7 @@ public class Pizza {
                     new FullScreenContentCallback() {
                         @Override
                         public void onAdDismissedFullScreenContent() {
-                            // Set the reference to null so isAdAvailable() returns false.
+
                             appOpenAd = null;
                             isShowingAd = false;
                             Pre_App_Open_Load(currentActivity);
@@ -1644,30 +1746,27 @@ public class Pizza {
 
     public void Pre_App_Open_Load(Context mContext) {
 
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
+
         if (appOpenAd != null) {
             return;
         }
 
         loadCallback =
                 new AppOpenAd.AppOpenAdLoadCallback() {
-                    /**
-                     * Called when an app open ad has loaded.
-                     *
-                     * @param ad the loaded app open ad.
-                     */
+
                     @Override
                     public void onAppOpenAdLoaded(AppOpenAd ad) {
                         appOpenAd = ad;
                     }
 
-                    /**
-                     * Called when an app open ad has failed to load.
-                     *
-                     * @param loadAdError the error.
-                     */
+
                     @Override
                     public void onAppOpenAdFailedToLoad(LoadAdError loadAdError) {
-                        // Handle the error.
+
 
                         tappxInterstitial_preload = new TappxInterstitial(mContext,
                                 Butter.gettx(Contextt));
@@ -1691,21 +1790,21 @@ public class Pizza {
                                     @Override
                                     public void onInterstitialClicked(
                                             TappxInterstitial arg0) {
-                                        // TODO Auto-generated method stub
+
 
                                     }
 
                                     @Override
                                     public void onInterstitialDismissed(
                                             TappxInterstitial arg0) {
-                                        // TODO Auto-generated method stub
+
 
                                     }
 
                                     @Override
                                     public void onInterstitialShown(
                                             TappxInterstitial arg0) {
-                                        // TODO Auto-generated method stub
+
 
                                     }
 
@@ -1724,6 +1823,11 @@ public class Pizza {
     }
 
     public void Reward_Inter_Show(Activity mContext, String title, String description, int Popupmenu_Type) {
+
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
 
         CustomProgressDialogue progressDialog = new CustomProgressDialogue(mContext, Popupmenu_Type, title, description);
 
@@ -1768,25 +1872,30 @@ public class Pizza {
                     }
                 });
 
+
     }
 
 
     public void Reward_Inter_Show_with_Dialog(Activity mContext, OnRewardgetListner onRewardgetListner, String title, String description, int Popupmenu_Type) {
 
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
 
         CustomProgressDialogue progressDialog = new CustomProgressDialogue(mContext, Popupmenu_Type, title, description);
 
 
         new FancyGifDialog.Builder(mContext)
-                .setTitle(title) // You can also send title like R.string.from_resources
-                .setMessage(description) // or pass like R.string.description_from_resources
+                .setTitle(title)
+                .setMessage(description)
                 .setTitleTextColor(R.color.titleText)
                 .setDescriptionTextColor(R.color.descriptionText)
-                .setNegativeBtnText("Close") // or pass it like android.R.string.cancel
+                .setNegativeBtnText("Close")
                 .setPositiveBtnBackground(R.color.positiveButton)
-                .setPositiveBtnText("Watch Now (Ad)") // or pass it like android.R.string.ok
+                .setPositiveBtnText("Watch Now (Ad)")
                 .setNegativeBtnBackground(R.color.positiveButton)
-                .setGifResource(R.drawable.ad1)   //Pass your Gif here
+                .setGifResource(R.drawable.ad1)
                 .isCancellable(true)
                 .OnPositiveClicked(new FancyGifDialogListener() {
                     @Override
@@ -1800,7 +1909,7 @@ public class Pizza {
                                 adRequest, new RewardedInterstitialAdLoadCallback() {
                                     @Override
                                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                                        // Handle the error.
+
                                         mrewardedInterstitialAd = null;
 
 
@@ -1857,20 +1966,24 @@ public class Pizza {
 
     public void Reward(Activity mContext, OnRewardgetListner onRewardgetListner, String title, String description, int Popupmenu_Type) {
 
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
 
         CustomProgressDialogue progressDialog = new CustomProgressDialogue(mContext, Popupmenu_Type, title, description);
 
 
         new FancyGifDialog.Builder(mContext)
-                .setTitle(title) // You can also send title like R.string.from_resources
-                .setMessage(description) // or pass like R.string.description_from_resources
+                .setTitle(title)
+                .setMessage(description)
                 .setTitleTextColor(R.color.titleText)
                 .setDescriptionTextColor(R.color.descriptionText)
-                .setNegativeBtnText("Close") // or pass it like android.R.string.cancel
+                .setNegativeBtnText("Close")
                 .setPositiveBtnBackground(R.color.positiveButton)
-                .setPositiveBtnText("Watch Now (Ad)") // or pass it like android.R.string.ok
+                .setPositiveBtnText("Watch Now (Ad)")
                 .setNegativeBtnBackground(R.color.positiveButton)
-                .setGifResource(R.drawable.ad1)   //Pass your Gif here
+                .setGifResource(R.drawable.ad1)
                 .isCancellable(true)
                 .OnPositiveClicked(new FancyGifDialogListener() {
                     @Override
@@ -1884,7 +1997,7 @@ public class Pizza {
                                 adRequest, new RewardedAdLoadCallback() {
                                     @Override
                                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                                        // Handle the error.
+
                                         mRewardedAd = null;
 
 
@@ -1953,16 +2066,16 @@ public class Pizza {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 context);
 
-        // set the title
+
         alertDialogBuilder.setTitle("" + Description);
 
-        // set dialog message
+
         alertDialogBuilder
-                // .setMessage("" + Description)
+
                 .setCancelable(false)
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // code to do on NO tapped
+
                         dialog.cancel();
                     }
                 })
@@ -1971,7 +2084,7 @@ public class Pizza {
                         new DialogInterface.OnClickListener() {
                             @SuppressLint("InlinedApi")
                             public void onClick(DialogInterface dialog, int id) {
-                                // code to do on CANCEL tapped
+
                                 Uri uri = Uri.parse("market://details?id="
                                         + Packages);
                                 Intent goToMarket = new Intent(
@@ -1992,7 +2105,7 @@ public class Pizza {
                 .setPositiveButton("Sure",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                // what to do if YES is tapped
+
                                 dialog.cancel();
                                 ((Activity) context).moveTaskToBack(true);
                                 ((Activity) context).finish();
@@ -2037,19 +2150,19 @@ public class Pizza {
 
                 @Override
                 public void onInterstitialClicked(TappxInterstitial arg0) {
-                    // TODO Auto-generated method stub
+
 
                 }
 
                 @Override
                 public void onInterstitialDismissed(TappxInterstitial arg0) {
-                    // TODO Auto-generated method stub
+
 
                 }
 
                 @Override
                 public void onInterstitialShown(TappxInterstitial arg0) {
-                    // TODO Auto-generated method stub
+
 
                 }
 
@@ -2100,17 +2213,17 @@ public class Pizza {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 context);
 
-        // set the title of the Alert Dialog
+
         alertDialogBuilder.setTitle("" + Description);
 
-        // set the title of the Alert Dialog
+
         TextView Exit_Title = new TextView(context);
         Exit_Title.setText("" + Description);
         Exit_Title.setTextSize(25);
         Exit_Title.setGravity(Gravity.CENTER_HORIZONTAL);
         alertDialogBuilder.setView(Exit_Title);
 
-        // Exit Ads With Back Menu . . .
+
         if (Butter.getbanner(Contextt) == 0) {
 
             Banner = Butter.getbanner1(Contextt);
@@ -2160,7 +2273,7 @@ public class Pizza {
 
             @Override
             public void onAdLoaded() {
-                // TODO Auto-generated method stub
+
 
                 Butter.setsplashcount(context, 0);
 
@@ -2169,31 +2282,31 @@ public class Pizza {
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
-                // TODO Auto-generated method stub
+
 
                 super.onAdFailedToLoad(errorCode);
 
-                com.tappx.sdk.android.TappxBanner.AdSize Banner_Type_Size_Tappx = null;
+                TappxBanner.AdSize Banner_Type_Size_Tappx = null;
 
                 if (Banner_Type == 1) {
 
-                    Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250;
+                    Banner_Type_Size_Tappx = TappxBanner.AdSize.BANNER_300x250;
 
                 } else if (Banner_Type == 2) {
 
-                    Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250;
+                    Banner_Type_Size_Tappx = TappxBanner.AdSize.BANNER_300x250;
 
                 } else if (Banner_Type == 3) {
 
-                    Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250;
+                    Banner_Type_Size_Tappx = TappxBanner.AdSize.BANNER_300x250;
 
                 } else if (Banner_Type == 4) {
 
-                    Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250;
+                    Banner_Type_Size_Tappx = TappxBanner.AdSize.BANNER_300x250;
 
                 } else {
 
-                    Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250;
+                    Banner_Type_Size_Tappx = TappxBanner.AdSize.BANNER_300x250;
 
                 }
 
@@ -2238,13 +2351,13 @@ public class Pizza {
             }
         });
 
-        // set dialog message
+
         alertDialogBuilder
-                // .setMessage("" + Description)
+
                 .setCancelable(false)
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // code to do on NO tapped
+
                         dialog.cancel();
                     }
                 })
@@ -2253,7 +2366,7 @@ public class Pizza {
                         new DialogInterface.OnClickListener() {
                             @SuppressLint("InlinedApi")
                             public void onClick(DialogInterface dialog, int id) {
-                                // code to do on CANCEL tapped
+
                                 Uri uri = Uri.parse("market://details?id="
                                         + Packages);
                                 Intent goToMarket = new Intent(
@@ -2275,7 +2388,7 @@ public class Pizza {
                 .setPositiveButton("Sure",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                // what to do if YES is tapped
+
                                 dialog.cancel();
                                 ((Activity) context).moveTaskToBack(true);
                                 ((Activity) context).finish();
@@ -2315,6 +2428,10 @@ public class Pizza {
 
             Exit_Popup_With_Ads_Native(context);
 
+        } else if (Exit_Menu_Decided == 100) {
+
+            onBackPressed(context);
+
         } else {
 
             onBackPressed(context);
@@ -2331,10 +2448,10 @@ public class Pizza {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 context);
 
-        // set the title of the Alert Dialog
+
         alertDialogBuilder.setTitle("" + Description);
 
-        // set the title of the Alert Dialog
+
         TextView Exit_Title = new TextView(context);
         Exit_Title.setText("" + Description);
         Exit_Title.setTextSize(25);
@@ -2347,13 +2464,13 @@ public class Pizza {
 
         Native_Back(context, Exit_Ads, 2, 0, 0, 0);
 
-        // set dialog message
+
         alertDialogBuilder
-                // .setMessage("" + Description)
+
                 .setCancelable(false)
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // code to do on NO tapped
+
                         dialog.cancel();
                     }
                 })
@@ -2362,7 +2479,7 @@ public class Pizza {
                         new DialogInterface.OnClickListener() {
                             @SuppressLint("InlinedApi")
                             public void onClick(DialogInterface dialog, int id) {
-                                // code to do on CANCEL tapped
+
                                 Uri uri = Uri.parse("market://details?id="
                                         + Packages);
                                 Intent goToMarket = new Intent(
@@ -2384,7 +2501,7 @@ public class Pizza {
                 .setPositiveButton("Sure",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                // what to do if YES is tapped
+
                                 dialog.cancel();
                                 ((Activity) context).moveTaskToBack(true);
                                 ((Activity) context).finish();
@@ -2411,8 +2528,6 @@ public class Pizza {
 
                     if (Server_Yes_No == 1 || Server_Yes_No == 0) {
 
-                        //Native_Type = 1 - Means Small Native Ads
-                        //Native_Type = 2 - Means Medium Native Ads
 
                         if (Butter.getnative(nContext) == 0) {
 
@@ -2442,7 +2557,7 @@ public class Pizza {
 
                                         TemplateView templateView = new TemplateView(nContext, 2);
 
-                                        //TemplateView templateView = findViewById(R.id.my_template);
+
                                         templateView.setStyles(styles);
                                         templateView.setNativeAd(nativeAd);
 
@@ -2450,7 +2565,7 @@ public class Pizza {
                                         Ad_Layout.addView(templateView);
 
                                         templateView.setVisibility(View.VISIBLE);
-                                        //Toast.makeText(nContext, "Native Ad is loaded, now you can show the native ad", Toast.LENGTH_LONG).show();
+
 
                                     }
 
@@ -2458,7 +2573,7 @@ public class Pizza {
                                 .withAdListener(new AdListener() {
                                     @Override
                                     public void onAdFailedToLoad(LoadAdError adError) {
-                                        // Handle the failure by logging, altering the UI, and so on.
+
 
                                         Ad_Layout.removeAllViews();
 
@@ -2469,8 +2584,8 @@ public class Pizza {
                                     }
                                 })
                                 .withNativeAdOptions(new NativeAdOptions.Builder()
-                                        // Methods in the NativeAdOptions.Builder class can be
-                                        // used here to specify individual options settings.
+
+
                                         .build())
                                 .build();
 
@@ -2553,7 +2668,7 @@ public class Pizza {
 
                         @Override
                         public void onAdLoaded() {
-                            // TODO Auto-generated method stub
+
 
                             Ad_Layout.setVisibility(View.VISIBLE);
                             Butter.setsplashcount(Contextt, 0);
@@ -2564,32 +2679,32 @@ public class Pizza {
 
                         @Override
                         public void onAdFailedToLoad(int errorCode) {
-                            // TODO Auto-generated method stub
+
                             super.onAdFailedToLoad(errorCode);
 
                             mAdView.destroy();
 
-                            com.tappx.sdk.android.TappxBanner.AdSize Banner_Type_Size_Tappx = null;
+                            TappxBanner.AdSize Banner_Type_Size_Tappx = null;
 
                             if (Banner_Type == 1) {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.SMART_BANNER;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.SMART_BANNER;
 
                             } else if (Banner_Type == 2) {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.BANNER_300x250;
 
                             } else if (Banner_Type == 3) {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.BANNER_300x250;
 
                             } else if (Banner_Type == 4) {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.BANNER_300x250;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.BANNER_300x250;
 
                             } else {
 
-                                Banner_Type_Size_Tappx = com.tappx.sdk.android.TappxBanner.AdSize.SMART_BANNER;
+                                Banner_Type_Size_Tappx = TappxBanner.AdSize.SMART_BANNER;
 
                             }
 
@@ -2655,11 +2770,11 @@ public class Pizza {
 
 
     private void Ad_Popup(Context mContext, String Title_Text_Of_Popup) {
-        // TODO Auto-generated method stub
+
 
         Ad_ProgressDialog = ProgressDialog.show(mContext, "", ""
                 + Title_Text_Of_Popup, true);
-        // Ad_ProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
         Ad_ProgressDialog.getWindow().setBackgroundDrawable(
                 new ColorDrawable(Color.TRANSPARENT));
         Ad_ProgressDialog.setCancelable(true);
@@ -2668,7 +2783,7 @@ public class Pizza {
     }
 
     public void Rate_App_Randomly(Context mContext) {
-        // TODO Auto-generated method stub
+
 
         if ((new Random().nextInt((20 - 1) + 1) + 1) == 10) {
             Rate_App(mContext);
@@ -2677,15 +2792,15 @@ public class Pizza {
     }
 
     public void Rate_App(final Context mContext) {
-        // TODO Auto-generated method stub
+
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 mContext);
 
-        // set the title
+
         alertDialogBuilder.setTitle("" + mContext.getString(R.string.app_name));
 
-        // set dialog message
+
         alertDialogBuilder
                 .setMessage("Please Rate Our Application")
                 .setCancelable(true)
@@ -2693,7 +2808,7 @@ public class Pizza {
                         new DialogInterface.OnClickListener() {
                             @SuppressLint("InlinedApi")
                             public void onClick(DialogInterface dialog, int id) {
-                                // what to do if YES is tapped
+
                                 Uri uri = Uri.parse("market://details?id="
                                         + mContext.getPackageName());
                                 Intent goToMarket = new Intent(
@@ -2717,7 +2832,7 @@ public class Pizza {
                         new DialogInterface.OnClickListener() {
                             @SuppressLint("InlinedApi")
                             public void onClick(DialogInterface dialog, int id) {
-                                // code to do on Remind Me Later tapped
+
                                 dialog.cancel();
 
                             }
@@ -2725,7 +2840,7 @@ public class Pizza {
 
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // code to do on NO tapped
+
                         dialog.cancel();
                     }
                 });
@@ -2741,7 +2856,7 @@ public class Pizza {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // Showing progress dialog
+
 
         }
 
@@ -2749,7 +2864,6 @@ public class Pizza {
         protected Void doInBackground(Void... arg0) {
             HttpHandler sh = new HttpHandler();
 
-            // Making a request to url and getting response
 
             String jsonStr = sh.makeServiceCall("" + Server);
 
@@ -2757,10 +2871,10 @@ public class Pizza {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
 
-                    // Getting JSON Array node
+
                     JSONArray contacts = jsonObj.getJSONArray("" + Packages);
 
-                    // looping through All Contacts
+
                     for (int i = 0; i < contacts.length(); i++) {
                         JSONObject c = contacts.getJSONObject(i);
 
@@ -2780,10 +2894,9 @@ public class Pizza {
                         String extra2 = c.getString("extra2");
 
 
-                        // tmp hash map for single contact
                         HashMap<String, String> contact = new HashMap<String, String>();
 
-                        // adding each child node to HashMap key => value
+
                         contact.put("exit_popup", id);
                         contact.put("tx", tx);
                         contact.put("b1", b1);
@@ -2800,7 +2913,6 @@ public class Pizza {
                         contact.put("extra2", extra2);
 
 
-                        // adding contact to contact list
                         contactList.add(contact);
 
                     }
@@ -2817,7 +2929,7 @@ public class Pizza {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            // Dismiss the progress dialog
+
 
             if (contactList.size() > 0) {
 
@@ -2852,38 +2964,46 @@ public class Pizza {
                 Butter.setinter_reward(Contextt, "" + IRD);
                 Butter.setextra1(Contextt, "" + EX1);
                 Butter.setextra2(Contextt, "" + EX2);
+                Butter.setextra2(Contextt, "" + EX2);
 
-
-                if ((Butter.getapp_id(Contextt)).equals("ca-app-pub-3940256099942544~3347511713")) {
-
-                } else {
-
-                    MobileAds.initialize(Contextt, Butter.getapp_id(Contextt));
-
-                }
 
                 Server_Yes_No = 1;
 
-                if ((Butter.getextra1(Contextt)).equals("1")) {
 
-                    Pre_Interstial_Load(Contextt);
+                if (Exit_Menu_Decided == 100) {
 
-                } else if ((Butter.getextra1(Contextt)).equals("2")) {
-
-                    Pre_App_Open_Load(Contextt);
-
-                } else if ((Butter.getextra1(Contextt)).equals("3")) {
-
-                    Pre_Interstial_Load(Contextt);
-
-                    Pre_App_Open_Load(Contextt);
 
                 } else {
 
-                    Pre_Interstial_Load(Contextt);
+                    if ((Butter.getapp_id(Contextt)).equals("ca-app-pub-3940256099942544~3347511713")) {
 
-                    Pre_App_Open_Load(Contextt);
+                    } else {
 
+                        MobileAds.initialize(Contextt, Butter.getapp_id(Contextt));
+
+                    }
+
+                    if ((Butter.getextra1(Contextt)).equals("1")) {
+
+                        Pre_Interstial_Load(Contextt);
+
+                    } else if ((Butter.getextra1(Contextt)).equals("2")) {
+
+                        Pre_App_Open_Load(Contextt);
+
+                    } else if ((Butter.getextra1(Contextt)).equals("3")) {
+
+                        Pre_Interstial_Load(Contextt);
+
+                        Pre_App_Open_Load(Contextt);
+
+                    } else {
+
+                        Pre_Interstial_Load(Contextt);
+
+                        Pre_App_Open_Load(Contextt);
+
+                    }
                 }
 
 
@@ -2957,17 +3077,17 @@ public class Pizza {
                 HttpURLConnection conn = (HttpURLConnection) url
                         .openConnection();
                 conn.setRequestMethod("GET");
-                // read the response
+
                 InputStream in = new BufferedInputStream(conn.getInputStream());
                 response = convertStreamToString(in);
             } catch (MalformedURLException e) {
-                // Log.e(TAG, "MalformedURLException: " + e.getMessage());
+
             } catch (ProtocolException e) {
-                // Log.e(TAG, "ProtocolException: " + e.getMessage());
+
             } catch (IOException e) {
-                // Log.e(TAG, "IOException: " + e.getMessage());
+
             } catch (Exception e) {
-                // Log.e(TAG, "Exception: " + e.getMessage());
+
             }
             return response;
         }
@@ -3029,6 +3149,11 @@ public class Pizza {
     }
 
     public void Increase_Ads(Context aContext) {
+
+        if (Exit_Menu_Decided == 100) {
+
+            return;
+        }
 
         if (Exit_Menu_Decided == 3) {
 
